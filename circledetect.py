@@ -1,0 +1,793 @@
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+import math
+import os
+# import pandas as pd
+# import openpyxl as op
+
+class CircleDetect:
+    COLOR_LIST = [
+        'red',
+        'green',
+        'blue',
+        'cyan',
+        'magenta',
+        'yellow',
+        'black']
+    
+    SET_ORDER_F_SITA = {
+        'black' : 0,
+        'red': 2,
+        'yellow': 1,
+        'blue': 3}
+
+    SET_ORDER_B_SITA = {
+        'black': 0,
+        'cyan': 3,
+        'magenta': 2,
+        'green': 1}
+    
+    SET_ORDER_F_RAWANA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_RAWANA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_RAMA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_RAMA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_HANUMAN = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_HANUMAN = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_LAKSMANA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_LAKSMANA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_SUGRIWA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_SUGRIWA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_BALI = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_BALI = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_WIBHISANA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_WIBHISANA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_ANGADA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_ANGADA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+    
+    SET_ORDER_F_ANILA = {
+        'black' : 0,
+        'red': 1,
+        'green': 2,
+        'blue': 3}
+
+    SET_ORDER_B_ANILA = {
+        'black': 0,
+        'cyan': 1,
+        'magenta': 2,
+        'yellow': 3}
+      
+    def __init__(self, image_path, arrayVersion=False, thresholdVersion=False, detectFULL=False, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=SET_ORDER_F_SITA, set_order_b=SET_ORDER_B_SITA):
+        self.color_array = CircleDetect.setting_color_array(arrayVersion)
+        self.image_path = image_path
+        self.minimumDist = minimumDist
+        self.parameter1 = parameter1
+        self.parameter2 = parameter2
+        self.minimumRadius = minimumRadius
+        self.maximumRadius = maximumRadius
+        self.tolerance = tolerance
+        self.ptpthreshold = ptpthreshold
+        self.set_order_f = set_order_f
+        self.set_order_b = set_order_b
+        
+        img = cv2.imread(self.image_path)
+        assert img is not None, "file could not be read, check with os.path.exists()"
+        
+        cimg = img.copy()
+        cimg = cv2.cvtColor(cimg, cv2.COLOR_BGR2RGB)
+        imgr = cimg[:,:,0]
+        imgg = cimg[:,:,1]
+        imgb = cimg[:,:,2]
+
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        
+        img = cv2.medianBlur(img,11)
+        imgr = cv2.medianBlur(imgr,11)
+        imgg = cv2.medianBlur(imgg,11)
+        imgb = cv2.medianBlur(imgb,11)
+        
+        img = cv2.resize(img, (0,0), img, 0.2, 0.2)
+        cimg = cv2.resize(cimg, (0,0), cimg, 0.2, 0.2)
+        imgr = cv2.resize(imgr, (0,0), imgr, 0.2, 0.2)
+        imgg = cv2.resize(imgg, (0,0), imgg, 0.2, 0.2)
+        imgb = cv2.resize(imgb, (0,0), imgb, 0.2, 0.2)
+        
+        # invimg = cv2.bitwise_not(img)
+        # self.iimg = invimg
+        
+        self.img, self.cimg, self.imgr, self.imgg, self.imgb = img, cimg, imgr, imgg, imgb
+        
+        
+        if thresholdVersion:
+            CircleDetect.threshold_img(self)
+        
+        self.circles = CircleDetect.detect_circles(self, self.img)
+        self.circlesr = CircleDetect.detect_circles(self, self.imgr)
+        self.circlesg = CircleDetect.detect_circles(self, self.imgg)
+        self.circlesb = CircleDetect.detect_circles(self, self.imgb)
+        # self.circlesi = CircleDetect.detect_circles(self, self.iimg)
+        
+        # self.combined_circles = np.concatenate((self.circles, self.circlesr, self.circlesg, self.circlesb, self.circlesi), axis=1)
+        self.combined_circles = np.concatenate((self.circles, self.circlesr, self.circlesg, self.circlesb), axis=1)
+        
+        if detectFULL:
+            self.circles = self.combined_circles
+        
+        self.filtered_circles = CircleDetect.filter_circles(self)
+        
+    def detect_circles(self, img):
+        
+        circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,self.minimumDist,
+                            param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
+        circles = np.int32(np.around(circles))
+        return circles
+        
+        
+        
+    def setting_color_array(arrayVersion):
+        color_array = np.zeros(shape=(3,len(CircleDetect.COLOR_LIST)))
+        if arrayVersion:
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 142, 35, 45
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 96, 126, 64
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 39, 51, 99
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 117, 164, 174
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 126, 49, 101
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 212, 184, 41
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 30, 29, 35
+                else:
+                    continue
+                    # print('color not found')
+        else:
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 150, 17, 34
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 98, 119, 44
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 26, 29, 108
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 112, 153, 181
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 143, 49, 133
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 196, 171, 17
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 7, 7, 7
+                else:
+                    continue
+                    # print('color not found')
+            
+        color_array = color_array.astype(np.uint8)
+        return color_array 
+        
+    def get_mean_and_range(self, circleposx, circleposy, radius, img, tolerance=8):
+        
+        imgr = self.cimg[:,:,0]
+        imgg = self.cimg[:,:,1]
+        imgb = self.cimg[:,:,2]
+        
+        if radius < tolerance:
+            return 0, 0
+        # print('get_mean_and_range')
+        mask = np.zeros_like(img)
+        cv2.circle(mask, (circleposx, circleposy), (radius-tolerance), 255, -1)
+        # masked_img = cv2.bitwise_and(img, mask)
+        masked_imgr = cv2.bitwise_and(imgr, mask)
+        masked_imgg = cv2.bitwise_and(imgg, mask)
+        masked_imgb = cv2.bitwise_and(imgb, mask)
+        
+        num = (img.shape[0])*(img.shape[1])
+        
+        # masked_reshape = masked_img.reshape(1,num)
+        masked_reshape_r = masked_imgr.reshape(1,num)
+        masked_reshape_g = masked_imgg.reshape(1,num)
+        masked_reshape_b = masked_imgb.reshape(1,num)
+        reshape = mask.reshape(1,num)
+        
+        new_list_r = []
+        new_list_g = []
+        new_list_b = []
+
+        for i in range(int(num)):
+            if reshape[0][i] == 255:
+                # new_list.append(masked_reshape[0][i])
+                new_list_r.append(masked_reshape_r[0][i])
+                new_list_g.append(masked_reshape_g[0][i])
+                new_list_b.append(masked_reshape_b[0][i])
+                
+        new_list_r = np.array(new_list_r)
+        new_list_g = np.array(new_list_g)
+        new_list_b = np.array(new_list_b)
+                
+        # grab the most volatile values
+        new_list = []
+        ptp_r = np.ptp(new_list_r)   
+        ptp_g = np.ptp(new_list_g)
+        ptp_b = np.ptp(new_list_b)
+        
+        new_list.append(ptp_r)
+        new_list.append(ptp_g)
+        new_list.append(ptp_b)
+        
+        new_list = np.array(new_list)
+        
+        print(new_list.max())
+        
+        return new_list.max()
+    
+    def dE76_8bit_comparator(self, circleposx, circleposy, radius, cimg):
+        # print('dE76_8bit_comparator')
+        color_array = self.color_array
+        
+        grayscale = cv2.cvtColor(cimg, cv2.COLOR_BGR2GRAY)
+        
+        mask = np.zeros_like(grayscale)
+        cv2.circle(mask, (circleposx, circleposy), (radius-5), 255, -1)
+        masked_cimg_r = cv2.bitwise_and(cimg[:,:,0], mask)
+        masked_cimg_g = cv2.bitwise_and(cimg[:,:,1], mask)
+        masked_cimg_b = cv2.bitwise_and(cimg[:,:,2], mask)
+        
+        num = (cimg.shape[0])*(cimg.shape[1])
+        
+        masked_reshape_r = masked_cimg_r.reshape(1,num)
+        masked_reshape_g = masked_cimg_g.reshape(1,num)
+        masked_reshape_b = masked_cimg_b.reshape(1,num)
+        
+        reshape = mask.reshape(1,num)
+        
+        new_list_r = []
+        new_list_g = []
+        new_list_b = []
+
+        for i in range(int(num)):
+            if reshape[0][i] == 255:
+                new_list_r.append(masked_reshape_r[0][i])
+                new_list_g.append(masked_reshape_g[0][i])
+                new_list_b.append(masked_reshape_b[0][i])
+                
+        new_list_r = np.array(new_list_r)
+        new_list_g = np.array(new_list_g)
+        new_list_b = np.array(new_list_b)
+        
+        mean_r = np.mean(new_list_r)
+        mean_g = np.mean(new_list_g)
+        mean_b = np.mean(new_list_b)
+        
+        delta_E_array = []
+        
+        # print(len(color_array[0]))
+        
+        for i in range(len(color_array[0])):
+            delta_E = math.sqrt((mean_r - color_array[0][i])**2 + (mean_g - color_array[1][i])**2 + (mean_b - color_array[2][i])**2)
+            # print(delta_E)
+            delta_E_array.append(delta_E)
+            
+        delta_E_array = np.array(delta_E_array)
+        determined_color = ''
+        
+        if delta_E_array.min() == delta_E_array[0]:
+            determined_color = 'red'
+            # print('red')
+        elif delta_E_array.min() == delta_E_array[1]:
+            determined_color = 'green'
+            # print('green')
+        elif delta_E_array.min() == delta_E_array[2]:
+            determined_color = 'blue'
+            # print('blue')
+        elif delta_E_array.min() == delta_E_array[3]:
+            determined_color = 'cyan'
+            # print('cyan')
+        elif delta_E_array.min() == delta_E_array[4]:
+            determined_color = 'magenta'
+            # print('magenta')
+        elif delta_E_array.min() == delta_E_array[5]:
+            determined_color = 'yellow'
+            # print('yellow')
+        elif delta_E_array.min() == delta_E_array[6]:
+            determined_color = 'black'
+            # print('black')
+        else:
+            pass
+            # print('color not found')
+        return determined_color, delta_E_array.min()
+     
+    def filter_circles(self):
+        # img, cimg, circles = CircleDetect.get_img_and_circles(self)
+        circles = self.circles
+        
+        list_of_ranges = []
+
+        # print(mean, range)
+        for i in range(self.circles.shape[1]):
+            ranges = CircleDetect.get_mean_and_range(self, circles[0][i][0], circles[0][i][1], circles[0][i][2], self.img, tolerance=self.tolerance)
+            list_of_ranges.append(ranges)
+            # print(mean, ranges)
+            
+        delete_list = []
+
+        for i in range(len(list_of_ranges)):
+            if list_of_ranges[i] > self.ptpthreshold:
+                print(i)
+                delete_list.append(i)
+                # circles = np.delete(circles, i, axis=1)
+                
+        delete_list = sorted(delete_list, reverse=True)
+
+        for i in delete_list:
+            circles = np.delete(circles, i, axis=1)
+            
+        filtered_circles = circles
+            
+        return filtered_circles
+        
+    def detect_colors(self):
+        filtered_circles = self.filtered_circles
+        
+        recognized_colors = []
+        instability_factor = []
+
+        for i in range(filtered_circles.shape[1]):
+            # print('circle', i)
+            # print(get_mean_and_range(circles[0][i][0], circles[0][i][1], circles[0][i][2], img))
+            rcol, ifac = CircleDetect.dE76_8bit_comparator(self, filtered_circles[0][i][0], filtered_circles[0][i][1], filtered_circles[0][i][2], self.cimg)
+            
+            recognized_colors.append(rcol)
+            instability_factor.append(ifac)
+        
+        return recognized_colors, instability_factor
+    
+    def anti_duplicates(self):
+        # fix this to compare HSL, not RGB (make a dE94 comparator)
+        
+        filtered_circles = self.filtered_circles
+        seen_colors, instability_factor = CircleDetect.detect_colors(self)
+        
+        print(filtered_circles)
+        print(filtered_circles.shape)
+        
+        true_filtered_circles = np.zeros((1,7,3), dtype=np.int32)
+        true_seen_colors = []
+        
+        red_list = []
+        green_list = []
+        blue_list = []
+        cyan_list = []
+        magenta_list = []
+        yellow_list = []
+        black_list = []
+        
+        color_counter = np.zeros((1,7), dtype=np.int32)
+        
+        for i in range(len(seen_colors)):
+            if seen_colors[i] == 'red':
+                red_list.append(i)
+                color_counter[0][0] += 1
+            elif seen_colors[i] == 'green':
+                green_list.append(i)
+                color_counter[0][1] += 1
+            elif seen_colors[i] == 'blue':
+                blue_list.append(i)
+                color_counter[0][2] += 1
+            elif seen_colors[i] == 'cyan':
+                cyan_list.append(i)
+                color_counter[0][3] += 1
+            elif seen_colors[i] == 'magenta':
+                magenta_list.append(i)
+                color_counter[0][4] += 1
+            elif seen_colors[i] == 'yellow':
+                yellow_list.append(i)
+                color_counter[0][5] += 1
+            elif seen_colors[i] == 'black':
+                black_list.append(i)
+                color_counter[0][6] += 1
+            else:
+                continue
+                # print('color not found/not in set')       
+                
+        print(color_counter)
+        print(seen_colors)
+        print('ifac', instability_factor)
+        print('red', red_list)
+        print('green', green_list)
+        print('blue', blue_list)
+        print('cyan', cyan_list)
+        print('magenta', magenta_list)
+        print('yellow', yellow_list)
+        print('black', black_list)
+                
+        for i in range(len(color_counter[0])):
+            # choosing the most similar color
+            current_color = np.zeros((1,3), dtype=np.int32)
+            if color_counter[0][i] > 1:
+                if i == 0:
+                    for j in range(len(red_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][red_list[j]]
+                        else:
+                            if instability_factor[red_list[j]] > instability_factor[red_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][red_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('red')
+                elif i == 1:
+                    for j in range(len(green_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][green_list[j]]
+                        else:
+                            if instability_factor[green_list[j]] > instability_factor[green_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][green_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('green')
+                elif i == 2:
+                    for j in range(len(blue_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][blue_list[j]]
+                        else:
+                            if instability_factor[blue_list[j]] > instability_factor[blue_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][blue_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('blue')
+                elif i == 3:
+                    for j in range(len(cyan_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][cyan_list[j]]
+                        else:
+                            if instability_factor[cyan_list[j]] > instability_factor[cyan_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][cyan_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('cyan')
+                elif i == 4:
+                    for j in range(len(magenta_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][magenta_list[j]]
+                        else:
+                            if instability_factor[magenta_list[j]] > instability_factor[magenta_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][magenta_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('magenta')
+                elif i == 5:
+                    for j in range(len(yellow_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][yellow_list[j]]
+                        else:
+                            if instability_factor[yellow_list[j]] > instability_factor[yellow_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][yellow_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('yellow')
+                elif i == 6:
+                    for j in range(len(black_list)):
+                        if j == 0:
+                            current_color = filtered_circles[0][black_list[j]]
+                        else:
+                            if instability_factor[black_list[j]] > instability_factor[black_list[j-1]]:
+                                continue
+                            else:
+                                current_color = filtered_circles[0][black_list[j]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('black')
+
+            else:
+                if i == 0:
+                    current_color = filtered_circles[0][red_list[0]]
+                    true_filtered_circles[0][i] = current_color 
+                    true_seen_colors.append('red')
+                elif i == 1:
+                    current_color = filtered_circles[0][green_list[0]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('green')
+                elif i == 2:
+                    current_color = filtered_circles[0][blue_list[0]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('blue')
+                elif i == 3:
+                    current_color = filtered_circles[0][cyan_list[0]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('cyan')
+                elif i == 4:
+                    current_color = filtered_circles[0][magenta_list[0]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('magenta')
+                elif i == 5:
+                    current_color = filtered_circles[0][yellow_list[0]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('yellow')
+                elif i == 6:
+                    current_color = filtered_circles[0][black_list[0]]
+                    true_filtered_circles[0][i] = current_color
+                    true_seen_colors.append('black')
+                else:
+                    continue
+                    # print('color not found/not in set')
+                    
+        print('\n')
+        print(true_seen_colors)
+        print(true_filtered_circles)
+                                
+        return true_filtered_circles, true_seen_colors
+    
+    def reorder_circles(self):
+        self.filtered_circles, recognized_colors = CircleDetect.anti_duplicates(self)
+
+        reordered_circles_f = np.zeros((1,4,3), dtype=np.int32)
+        reordered_circles_b = np.zeros((1,4,3), dtype=np.int32)
+        
+        reordered_list_f = []
+        reordered_list_b = []
+        
+        reordered_list_f = list(self.set_order_f.keys())
+        reordered_list_b = list(self.set_order_b.keys())
+
+        for i in range(len(recognized_colors)):
+            if recognized_colors[i] == reordered_list_f[0]:
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+            elif recognized_colors[i] == reordered_list_f[1]:
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+            elif recognized_colors[i] == reordered_list_f[2]:
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+            elif recognized_colors[i] == reordered_list_f[3]:
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+            else:
+                continue
+                # print('color not found/not in set')
+                
+        for i in range(len(recognized_colors)):
+            if recognized_colors[i] == reordered_list_b[0]:
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+            elif recognized_colors[i] == reordered_list_b[1]:
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+            elif recognized_colors[i] == reordered_list_b[2]:
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+            elif recognized_colors[i] == reordered_list_b[3]:
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+            else:
+                continue
+                # print('color not found/not in set')
+                
+        return reordered_circles_f, reordered_circles_b
+    
+    def vectorize(self):
+        reordered_circles_f, reordered_circles_b = CircleDetect.reorder_circles(self)
+        
+        vectors_f = np.zeros((3,2), dtype=np.int32)
+        vectors_b = np.zeros((3,2), dtype=np.int32)
+        
+        for i in range(len(reordered_circles_f[0])-1):
+            if i == 0:
+                vectors_f[0][0] = reordered_circles_f[0][i+1][0] - reordered_circles_f[0][i][0]
+                vectors_f[0][1] = reordered_circles_f[0][i+1][1] - reordered_circles_f[0][i][1]
+            elif i == 1:
+                vectors_f[1][0] = reordered_circles_f[0][i+1][0] - reordered_circles_f[0][i][0]
+                vectors_f[1][1] = reordered_circles_f[0][i+1][1] - reordered_circles_f[0][i][1]
+            elif i == 2:
+                vectors_f[2][0] = reordered_circles_f[0][i+1][0] - reordered_circles_f[0][i][0]
+                vectors_f[2][1] = reordered_circles_f[0][i+1][1] - reordered_circles_f[0][i][1]
+        
+        for i in range(len(reordered_circles_b[0])-1):
+            if i == 0:
+                vectors_b[0][0] = reordered_circles_b[0][i+1][0] - reordered_circles_b[0][i][0]
+                vectors_b[0][1] = reordered_circles_b[0][i+1][1] - reordered_circles_b[0][i][1]
+            elif i == 1:
+                vectors_b[1][0] = reordered_circles_b[0][i+1][0] - reordered_circles_b[0][i][0]
+                vectors_b[1][1] = reordered_circles_b[0][i+1][1] - reordered_circles_b[0][i][1]
+            elif i == 2:
+                vectors_b[2][0] = reordered_circles_b[0][i+1][0] - reordered_circles_b[0][i][0]
+                vectors_b[2][1] = reordered_circles_b[0][i+1][1] - reordered_circles_b[0][i][1]
+                
+        return vectors_f, vectors_b
+        
+    
+    def process_image(self):
+        reordered_circles_f, reordered_circles_b = CircleDetect.reorder_circles(self)
+                
+        cimg_copy = cv2.cvtColor(self.cimg.copy(), cv2.COLOR_RGB2BGR)
+        
+        for i in range(len(reordered_circles_f[0])-1):
+            # draw line
+            if i == 0:  
+                cv2.line(img=cimg_copy, pt1=(reordered_circles_f[0][i][0], reordered_circles_f[0][i][1]), pt2=(reordered_circles_f[0][i+1][0], reordered_circles_f[0][i+1][1]), color=(255,0,0), thickness=5)
+            elif i == 1:
+                cv2.line(img=cimg_copy, pt1=(reordered_circles_f[0][i][0], reordered_circles_f[0][i][1]), pt2=(reordered_circles_f[0][i+1][0], reordered_circles_f[0][i+1][1]), color=(0,255,0), thickness=5)
+            elif i == 2:
+                cv2.line(img=cimg_copy, pt1=(reordered_circles_f[0][i][0], reordered_circles_f[0][i][1]), pt2=(reordered_circles_f[0][i+1][0], reordered_circles_f[0][i+1][1]), color=(0,0,255), thickness=5)
+                
+        for i in range(len(reordered_circles_b[0])-1):
+            # draw line
+            if i == 0:  
+                cv2.line(img=cimg_copy, pt1=(reordered_circles_b[0][i][0], reordered_circles_b[0][i][1]), pt2=(reordered_circles_b[0][i+1][0], reordered_circles_b[0][i+1][1]), color=(255,0,0), thickness=5)
+            elif i == 1:
+                cv2.line(img=cimg_copy, pt1=(reordered_circles_b[0][i][0], reordered_circles_b[0][i][1]), pt2=(reordered_circles_b[0][i+1][0], reordered_circles_b[0][i+1][1]), color=(0,255,0), thickness=5)
+            elif i == 2:
+                cv2.line(img=cimg_copy, pt1=(reordered_circles_b[0][i][0], reordered_circles_b[0][i][1]), pt2=(reordered_circles_b[0][i+1][0], reordered_circles_b[0][i+1][1]), color=(0,0,255), thickness=5)
+                
+        return cimg_copy
+    
+    def show_processed_image(self):
+        cimg_copy = CircleDetect.process_image(self)
+
+        for i in self.filtered_circles[0,:]:
+            # draw the outer circle
+            cv2.circle(cimg_copy,(i[0],i[1]),i[2],(0,255,0),2)
+            # draw the center of the circle
+            cv2.circle(cimg_copy,(i[0],i[1]),2,(0,0,255),3)
+        cv2.imshow('detected circles', cimg_copy)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
+    def show_raw_circles(self, isgray=False):
+        if isgray:
+            rawimg = self.img.copy()
+        else:
+            rawimg = self.cimg.copy()
+            rawimg = cv2.cvtColor(rawimg, cv2.COLOR_RGB2BGR)
+        
+        for i in self.circles[0,:]:
+            # draw the outer circle
+            cv2.circle(rawimg,(i[0],i[1]),i[2],(0,255,0),2)
+            # draw the center of the circle
+            cv2.circle(rawimg,(i[0],i[1]),2,(0,0,255),3)
+            
+        cv2.imshow('initial detected circles',rawimg)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+            
+
+    def show_initial_circles(self, isgray=False):
+        if isgray:
+            icimg = self.img.copy()
+        else:
+            icimg = self.cimg.copy()
+            icimg = cv2.cvtColor(icimg, cv2.COLOR_RGB2BGR)
+
+        for i in self.filtered_circles[0,:]:
+            # draw the outer circle
+            cv2.circle(icimg,(i[0],i[1]),i[2],(0,255,0),2)
+            # draw the center of the circle
+            cv2.circle(icimg,(i[0],i[1]),2,(0,0,255),3)
+        # cv2.namedWindow('detected circles',cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow('detected circles', 1800, int((2256/4000)*1800))
+        cv2.imshow('initial detected circles',icimg)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
+    def show_filtered_circles(self, isgray=False):
+        
+        filtered_circles, recognized_colors = CircleDetect.anti_duplicates(self)
+        self.filtered_circles = filtered_circles
+        print('\n')
+        print(recognized_colors)
+        
+        if isgray:
+            fcimg = self.img.copy()
+        else:
+            fcimg = self.cimg.copy()
+
+        for i in self.filtered_circles[0,:]:
+            # draw the outer circle
+            cv2.circle(fcimg,(i[0],i[1]),i[2],(0,255,0),2)
+            # draw the center of the circle
+            cv2.circle(fcimg,(i[0],i[1]),2,(0,0,255),3)
+        # cv2.namedWindow('detected circles',cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow('detected circles', 1800, int((2256/4000)*1800))
+        cv2.imshow('filtered detected circles',fcimg)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
+    def threshold_img(self):
+        img = self.img.copy()
+        thresh1 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 6)
+        self.img = thresh1
+        
+        # circles = cv2.HoughCircles(thresh1,cv2.HOUGH_GRADIENT,1,self.minimumDist,
+        #                     param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
+        # circles = np.int32(np.around(circles))
+        
+        # colored_img = cv2.cvtColor(thresh1, cv2.COLOR_GRAY2BGR)
+        
+        # for i in circles[0,:]:
+        #     # draw the outer circle
+        #     cv2.circle(colored_img,(i[0],i[1]),i[2],(0,255,0),2)
+        #     # draw the center of the circle
+        #     cv2.circle(colored_img,(i[0],i[1]),2,(0,0,255),3)
+        
+        # cv2.imshow('post threshold',colored_img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        
