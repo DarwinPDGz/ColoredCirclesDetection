@@ -194,6 +194,7 @@ class CircleDetect:
             self.circles = self.combined_circles
         
         self.filtered_circles = CircleDetect.filter_circles(self)
+        self.filtered_circles2 = self.filtered_circles
         
         print(self.filtered_circles.shape)
         
@@ -304,7 +305,82 @@ class CircleDetect:
         new_list = np.array(new_list)
         
         return new_list[0], new_list[1], new_list[2]
+    
+    def lex_sorter(self, circleposx, circleposy, radius, img):
+        cimg = self.cimg
+        cimg = cv2.cvtColor(cimg, cv2.COLOR_RGB2HLS)
         
+        imgh = cimg[:,:,0]
+        imgl = cimg[:,:,1]
+        imgs = cimg[:,:,2]
+        
+        mask = np.zeros_like(img)
+        cv2.circle(mask, (circleposx, circleposy), radius, 255, -1)
+        masked_imgh = cv2.bitwise_and(imgh, mask)
+        masked_imgl = cv2.bitwise_and(imgl, mask)
+        masked_imgs = cv2.bitwise_and(imgs, mask)
+        
+        num = (img.shape[0])*(img.shape[1])
+        
+        masked_reshape_h = masked_imgh.reshape(1,num)
+        masked_reshape_l = masked_imgl.reshape(1,num)
+        masked_reshape_s = masked_imgs.reshape(1,num)
+        reshape = mask.reshape(1,num)
+        
+        new_list_h = []
+        new_list_l = []
+        new_list_s = []
+        
+        for i in range(int(num)):
+            if reshape[0][i] == 255:
+                new_list_h.append(masked_reshape_h[0][i])
+                new_list_l.append(masked_reshape_l[0][i])
+                new_list_s.append(masked_reshape_s[0][i])
+                
+        new_list_h = np.array(new_list_h)
+        new_list_l = np.array(new_list_l)
+        new_list_s = np.array(new_list_s)
+        
+        sorted_h = np.sort(new_list_h)
+        sorted_l = np.sort(new_list_l)
+        sorted_s = np.sort(new_list_s)
+        
+        return sorted_h, sorted_l, sorted_s
+    
+    def hls_visualizer(self, circleposx, circleposy, radius, img):
+        h, l, s = CircleDetect.lex_sorter(self, circleposx, circleposy, radius, img)
+        
+        h_strip = np.zeros((20,len(h),3), dtype=np.uint8)
+        l_strip = np.zeros((20,len(l),3), dtype=np.uint8)
+        s_strip = np.zeros((20,len(s),3), dtype=np.uint8)
+        
+        print(h_strip.shape)
+        print(l_strip.shape)
+        print(s_strip.shape)
+        
+        for j in range(20):
+            for i in range(len(h)):
+                print(i)
+                # convert hue into color wheel/strip
+                h_strip[j,i] = [h[i], 127, 255]
+                l_strip[j,i] = [0, l[i], 255]
+                s_strip[j,i] = [0, 127, s[i]]
+            
+        h_strip = cv2.cvtColor(h_strip, cv2.COLOR_HLS2RGB)
+        l_strip = cv2.cvtColor(l_strip, cv2.COLOR_HLS2RGB)
+        s_strip = cv2.cvtColor(s_strip, cv2.COLOR_HLS2RGB)
+        
+        fig = plt.figure(figsize=(20,20))
+        fig.subplots_adjust(hspace=0.5, wspace=0.5)
+        
+        # plt.subplot(1,3,1)
+        # plt.imshow(h_strip)
+        # plt.subplot(1,3,2)
+        # plt.imshow(l_strip)
+        # plt.subplot(1,3,3)
+        # plt.imshow(s_strip)
+        # plt.show()
+            
     def get_range(self, circleposx, circleposy, radius, img, tolerance=8):
         
         imgr = self.cimg[:,:,0]
@@ -625,6 +701,11 @@ class CircleDetect:
             pass
             # print('color not found')
         return determined_color, delta_rgb_array.min()
+    
+    def alt_filter_circles(self):
+        # hue sorter, lexicographical order
+        
+        pass
      
     def filter_circles(self):
         # img, cimg, circles = CircleDetect.get_img_and_circles(self)
@@ -905,7 +986,7 @@ class CircleDetect:
         return true_filtered_circles, true_seen_colors
     
     def reorder_circles(self):
-        self.filtered_circles, recognized_colors = CircleDetect.anti_duplicates(self)
+        self.filtered_circles2, recognized_colors = CircleDetect.anti_duplicates(self)
 
         reordered_circles_f = np.zeros((1,4,3), dtype=np.int32)
         reordered_circles_b = np.zeros((1,4,3), dtype=np.int32)
@@ -918,26 +999,26 @@ class CircleDetect:
 
         for i in range(len(recognized_colors)):
             if recognized_colors[i] == reordered_list_f[0]:
-                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles2[0][i]
             elif recognized_colors[i] == reordered_list_f[1]:
-                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles2[0][i]
             elif recognized_colors[i] == reordered_list_f[2]:
-                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles2[0][i]
             elif recognized_colors[i] == reordered_list_f[3]:
-                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_f[0][self.set_order_f[recognized_colors[i]]] = self.filtered_circles2[0][i]
             else:
                 continue
                 # print('color not found/not in set')
                 
         for i in range(len(recognized_colors)):
             if recognized_colors[i] == reordered_list_b[0]:
-                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles2[0][i]
             elif recognized_colors[i] == reordered_list_b[1]:
-                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles2[0][i]
             elif recognized_colors[i] == reordered_list_b[2]:
-                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles2[0][i]
             elif recognized_colors[i] == reordered_list_b[3]:
-                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles[0][i]
+                reordered_circles_b[0][self.set_order_b[recognized_colors[i]]] = self.filtered_circles2[0][i]
             else:
                 continue
                 # print('color not found/not in set')
@@ -979,31 +1060,45 @@ class CircleDetect:
         reordered_circles_f, reordered_circles_b = CircleDetect.reorder_circles(self)
                 
         cimg_copy = cv2.cvtColor(self.cimg.copy(), cv2.COLOR_RGB2BGR)
+        vectors_f = np.zeros((3,2), dtype=np.int32)
+        vectors_b = np.zeros((3,2), dtype=np.int32)
         
         for i in range(len(reordered_circles_f[0])-1):
             # draw line
             if i == 0:  
                 cv2.line(img=cimg_copy, pt1=(reordered_circles_f[0][i][0], reordered_circles_f[0][i][1]), pt2=(reordered_circles_f[0][i+1][0], reordered_circles_f[0][i+1][1]), color=(255,0,0), thickness=5)
+                vectors_f[0][0] = reordered_circles_f[0][i+1][0] - reordered_circles_f[0][i][0]
+                vectors_f[0][1] = reordered_circles_f[0][i+1][1] - reordered_circles_f[0][i][1]
             elif i == 1:
                 cv2.line(img=cimg_copy, pt1=(reordered_circles_f[0][i][0], reordered_circles_f[0][i][1]), pt2=(reordered_circles_f[0][i+1][0], reordered_circles_f[0][i+1][1]), color=(0,255,0), thickness=5)
+                vectors_f[1][0] = reordered_circles_f[0][i+1][0] - reordered_circles_f[0][i][0]
+                vectors_f[1][1] = reordered_circles_f[0][i+1][1] - reordered_circles_f[0][i][1]
             elif i == 2:
                 cv2.line(img=cimg_copy, pt1=(reordered_circles_f[0][i][0], reordered_circles_f[0][i][1]), pt2=(reordered_circles_f[0][i+1][0], reordered_circles_f[0][i+1][1]), color=(0,0,255), thickness=5)
+                vectors_f[2][0] = reordered_circles_f[0][i+1][0] - reordered_circles_f[0][i][0]
+                vectors_f[2][1] = reordered_circles_f[0][i+1][1] - reordered_circles_f[0][i][1]
                 
         for i in range(len(reordered_circles_b[0])-1):
             # draw line
             if i == 0:  
                 cv2.line(img=cimg_copy, pt1=(reordered_circles_b[0][i][0], reordered_circles_b[0][i][1]), pt2=(reordered_circles_b[0][i+1][0], reordered_circles_b[0][i+1][1]), color=(255,0,0), thickness=5)
+                vectors_b[0][0] = reordered_circles_b[0][i+1][0] - reordered_circles_b[0][i][0]
+                vectors_b[0][1] = reordered_circles_b[0][i+1][1] - reordered_circles_b[0][i][1]
             elif i == 1:
                 cv2.line(img=cimg_copy, pt1=(reordered_circles_b[0][i][0], reordered_circles_b[0][i][1]), pt2=(reordered_circles_b[0][i+1][0], reordered_circles_b[0][i+1][1]), color=(0,255,0), thickness=5)
+                vectors_b[1][0] = reordered_circles_b[0][i+1][0] - reordered_circles_b[0][i][0]
+                vectors_b[1][1] = reordered_circles_b[0][i+1][1] - reordered_circles_b[0][i][1]
             elif i == 2:
                 cv2.line(img=cimg_copy, pt1=(reordered_circles_b[0][i][0], reordered_circles_b[0][i][1]), pt2=(reordered_circles_b[0][i+1][0], reordered_circles_b[0][i+1][1]), color=(0,0,255), thickness=5)
+                vectors_b[2][0] = reordered_circles_b[0][i+1][0] - reordered_circles_b[0][i][0]
+                vectors_b[2][1] = reordered_circles_b[0][i+1][1] - reordered_circles_b[0][i][1]
                 
-        return cimg_copy
+        return vectors_f, vectors_b, cimg_copy
     
     def show_processed_image(self):
-        cimg_copy = CircleDetect.process_image(self)
+        vectors_f, vectors_b, cimg_copy = CircleDetect.process_image(self)
 
-        for i in self.filtered_circles[0,:]:
+        for i in self.filtered_circles2[0,:]:
             # draw the outer circle
             cv2.circle(cimg_copy,(i[0],i[1]),i[2],(0,255,0),2)
             # draw the center of the circle
@@ -1011,6 +1106,8 @@ class CircleDetect:
         cv2.imshow('detected circles', cimg_copy)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+        
+        return vectors_f, vectors_b
         
     def show_raw_circles(self, isgray=False):
         if isgray:
@@ -1028,7 +1125,6 @@ class CircleDetect:
         cv2.imshow('initial detected circles',rawimg)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-            
 
     def show_initial_circles(self, isgray=False):
         if isgray:
@@ -1051,7 +1147,7 @@ class CircleDetect:
     def show_filtered_circles(self, isgray=False):
         
         filtered_circles, recognized_colors = CircleDetect.anti_duplicates(self)
-        self.filtered_circles = filtered_circles
+        self.filtered_circles2 = filtered_circles
         print('\n')
         print(recognized_colors)
         
@@ -1060,7 +1156,7 @@ class CircleDetect:
         else:
             fcimg = self.cimg.copy()
 
-        for i in self.filtered_circles[0,:]:
+        for i in self.filtered_circles2[0,:]:
             # draw the outer circle
             cv2.circle(fcimg,(i[0],i[1]),i[2],(0,255,0),2)
             # draw the center of the circle
@@ -1074,9 +1170,9 @@ class CircleDetect:
     def threshold_img(self):
         cimg = self.cimg.copy()
         cimg_thresh = np.zeros_like(cimg)
-        cimg_thresh[:,:,0] = cv2.adaptiveThreshold(cimg[:,:,0], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 6)
-        cimg_thresh[:,:,1] = cv2.adaptiveThreshold(cimg[:,:,1], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 6)
-        cimg_thresh[:,:,2] = cv2.adaptiveThreshold(cimg[:,:,2], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, 6) 
+        cimg_thresh[:,:,0] = cv2.adaptiveThreshold(cimg[:,:,0], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 12)
+        cimg_thresh[:,:,1] = cv2.adaptiveThreshold(cimg[:,:,1], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 12)
+        cimg_thresh[:,:,2] = cv2.adaptiveThreshold(cimg[:,:,2], 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 12) 
         
         circlesr = cv2.HoughCircles(cimg_thresh[:,:,0],cv2.HOUGH_GRADIENT,1,self.minimumDist,
                             param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
@@ -1088,6 +1184,75 @@ class CircleDetect:
         
         circlesb = cv2.HoughCircles(cimg_thresh[:,:,2],cv2.HOUGH_GRADIENT,1,self.minimumDist,
                             param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
+        circlesb = np.int32(np.around(circlesb))
+        
+        combined_circles = np.concatenate((circlesr, circlesg, circlesb), axis=1)
+        
+        # colored_img = cv2.cvtColor(thresh1, cv2.COLOR_GRAY2BGR)
+        
+        for i in combined_circles[0,:]:
+            # draw the outer circle
+            cv2.circle(cimg_thresh,(i[0],i[1]),i[2],(0,255,0),2)
+            # draw the center of the circle
+            cv2.circle(cimg_thresh,(i[0],i[1]),2,(0,0,255),3)
+        
+        cv2.imshow('post threshold',cimg_thresh)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
+    def threshold_img_otsu(self):
+        cimg = self.cimg.copy()
+        cimg_thresh = np.zeros_like(cimg)
+        cimgr_thresh = np.array(cimg[:,:,0])
+        cimgg_thresh = np.array(cimg[:,:,1])
+        cimgb_thresh = np.array(cimg[:,:,2])
+        
+        ret1, cimgr_thresh = cv2.threshold(cimgr_thresh, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        ret2, cimgg_thresh = cv2.threshold(cimgg_thresh, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        ret3, cimgb_thresh = cv2.threshold(cimgb_thresh, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+           
+        # ret1, cimg_thresh[:,:,0] = cv2.threshold(cimg[:,:,0], 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        # ret2, cimg_thresh[:,:,1] = cv2.threshold(cimg[:,:,1], 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        # ret3, cimg_thresh[:,:,2] = cv2.threshold(cimg[:,:,2], 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        
+        cimg_thresh[:,:,0] = cimgr_thresh
+        cimg_thresh[:,:,1] = cimgg_thresh
+        cimg_thresh[:,:,2] = cimgb_thresh
+        
+        circlesr = cv2.HoughCircles(cimgr_thresh,cv2.HOUGH_GRADIENT,1,self.minimumDist,
+                            param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
+        
+        circlesg = cv2.HoughCircles(cimgg_thresh,cv2.HOUGH_GRADIENT,1,self.minimumDist,
+                            param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
+        
+        circlesb = cv2.HoughCircles(cimgb_thresh,cv2.HOUGH_GRADIENT,1,self.minimumDist,
+                            param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
+        
+        print(type(circlesr))
+        print(type(circlesg))
+        print(type(circlesb))
+        
+        # print(circlesr.shape)
+        # print(circlesg.shape)
+        # print(circlesb.shape)   
+        
+        if isinstance(circlesr, np.ndarray):
+            pass
+        else:
+            circlesr = np.array([[[0,0,0]]])
+        
+        if isinstance(circlesg, np.ndarray):
+            pass
+        else:
+            circlesg = np.array([[[0,0,0]]])
+            
+        if isinstance(circlesb, np.ndarray):
+            pass
+        else:
+            circlesb = np.array([[[0,0,0]]])     
+        
+        circlesr = np.int32(np.around(circlesr))
+        circlesg = np.int32(np.around(circlesg))
         circlesb = np.int32(np.around(circlesb))
         
         combined_circles = np.concatenate((circlesr, circlesg, circlesb), axis=1)
