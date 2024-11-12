@@ -35,6 +35,7 @@ class CircleDetectInstance:
                 self.parameter2 -= 1
             except Exception as e:
                 print(e)
+                print(self.image_path)
                 self.exceptions = False
                 break
             else:
@@ -232,6 +233,9 @@ class CircleDetect:
         
         if detectFULL:
             self.circles = self.combined_circles
+            
+        # debug functions
+        # self.show_raw_circles()
         
         if self.altFilter:
             self.filtered_circles = CircleDetect.alt_filter_circles(self)
@@ -259,7 +263,7 @@ class CircleDetect:
                 if color == 'red':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 177, 79, 73 #v
                 elif color == 'green':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 70, 94, 32 #v
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 84, 110, 45 #v
                 elif color == 'blue':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 51, 62, 126 #v
                 elif color == 'cyan':
@@ -276,17 +280,17 @@ class CircleDetect:
         else:
             for i, color in enumerate(CircleDetect.COLOR_LIST):
                 if color == 'red':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 150, 17, 34
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 124, 32, 47
                 elif color == 'green':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 98, 119, 44
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 98, 120, 45
                 elif color == 'blue':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 17, 23, 108
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 41, 45, 108
                 elif color == 'cyan':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 118, 161, 180
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 118, 155, 166
                 elif color == 'magenta':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 143, 49, 133
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 117, 49, 101
                 elif color == 'yellow':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 196, 171, 17
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 210, 179, 26
                 elif color == 'black':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 22, 23, 25
                 else:
@@ -513,7 +517,7 @@ class CircleDetect:
                 else:
                     continue
                 
-        if l_cumulative > int(len(l)*0.6):
+        if l_cumulative > int(len(l)*0.5):
             l_check = True
             
         # hue check
@@ -545,7 +549,7 @@ class CircleDetect:
                 else:
                     continue
         
-        if s_cumulative > int(len(s)*0.6):
+        if s_cumulative > int(len(s)*0.5):
             s_check = True
             
         ratio_h = h_cumulative/len(h)
