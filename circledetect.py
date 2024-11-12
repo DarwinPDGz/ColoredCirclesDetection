@@ -6,6 +6,41 @@ import os
 # import pandas as pd
 # import openpyxl as op
 
+class CircleDetectInstance:
+    
+    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None):
+        self.image_path = image_path
+        self.cct = cct
+        self.range_type = range_type
+        self.arrayVersion = arrayVersion
+        self.thresholdVersion = thresholdVersion
+        self.detectFULL = detectFULL
+        self.altFilter = altFilter
+        self.minimumDist = minimumDist
+        self.parameter1 = parameter1
+        self.parameter2 = parameter2
+        self.minimumRadius = minimumRadius
+        self.maximumRadius = maximumRadius
+        self.tolerance = tolerance
+        self.ptpthreshold = ptpthreshold
+        self.set_order_f = set_order_f
+        self.set_order_b = set_order_b
+        
+        self.exceptions = True
+        while self.exceptions:
+            try:
+                self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
+            except ValueError:
+                self.exceptions = True
+                self.parameter2 -= 1
+            except Exception as e:
+                print(e)
+                self.exceptions = False
+                break
+            else:
+                self.exceptions = False
+                break
+
 class CircleDetect:
     COLOR_LIST = [
         'red',
@@ -136,7 +171,10 @@ class CircleDetect:
         'magenta': 2,
         'yellow': 3}
       
-    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=SET_ORDER_F_SITA, set_order_b=SET_ORDER_B_SITA):
+    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None):
+        if set_order_f or set_order_f is None:
+            RuntimeError('set_order_f/set_order_b must be set')
+        
         self.color_array = CircleDetect.setting_color_array(arrayVersion)
         self.image_path = image_path
         self.minimumDist = minimumDist
@@ -204,6 +242,8 @@ class CircleDetect:
             self.filtered_circles2 = self.filtered_circles
             
         print(self.filtered_circles.shape)
+        
+        self.vf, self.vb, unused_cimg = CircleDetect.process_image(self) 
         
     def detect_circles(self, img):
         
@@ -1174,6 +1214,31 @@ class CircleDetect:
         print('black', black_list)
         for i in black_list:
             print(instability_factor[i])
+            
+        for i in range(7):
+            if i==0:
+                if len(red_list) == 0:
+                    raise ValueError('No red detected')
+            elif i==1:
+                if len(green_list) == 0:
+                    raise ValueError('No green detected')
+            elif i==2:
+                if len(blue_list) == 0:
+                    raise ValueError('No blue detected')
+            elif i==3:
+                if len(cyan_list) == 0:
+                    raise ValueError('No cyan detected')
+            elif i==4:
+                if len(magenta_list) == 0:
+                    raise ValueError('No magenta detected')
+            elif i==5:
+                if len(yellow_list) == 0:
+                    raise ValueError('No yellow detected')
+            elif i==6:
+                if len(black_list) == 0:
+                    raise ValueError('No black detected')
+            else:
+                continue
                 
         for i in range(len(color_counter[0])):
             # choosing the most similar color
