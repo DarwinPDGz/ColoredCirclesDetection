@@ -3,6 +3,7 @@ import cv2
 import matplotlib.pyplot as plt
 import math
 import os
+import PIL
 # import pandas as pd
 # import openpyxl as op
 
@@ -1475,7 +1476,7 @@ class CircleDetect:
                 
         return vectors_f, vectors_b, cimg_copy
     
-    def show_processed_image(self):
+    def show_processed_image(self, save=False, path='processed_image.jpg'):
         vectors_f, vectors_b, cimg_copy = CircleDetect.process_image(self)
 
         for i in self.filtered_circles2[0,:]:
@@ -1486,6 +1487,9 @@ class CircleDetect:
         cv2.imshow('detected circles', cimg_copy)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+        
+        if save:
+            cv2.imwrite(path, cimg_copy)
         
         return vectors_f, vectors_b
         
