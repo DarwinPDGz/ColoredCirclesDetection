@@ -29,6 +29,7 @@ class CircleDetectInstance:
         
         self.exceptions = True
         self.re_parameter2 = parameter2
+        self.cd = None
         
         if autoparam:
             readjust = True
@@ -61,20 +62,24 @@ class CircleDetectInstance:
                     break
                 
             while self.exceptions:
-                try:
-                    self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.re_parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
-                except (AttributeError, ValueError):
-                    self.exceptions = True
-                    self.re_parameter2 -= 1
-                    print('re_parameter2 (NOT done, instance is autoparamed): ', self.re_parameter2)
-                # except Exception as e:
-                #     print(e, 'readjusting, param2')
-                #     print(self.image_path)
-                #     self.exceptions = True
-                #     # return 0, 0
+                if self.re_parameter2 > 10:
+                    try:
+                        self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.re_parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
+                    except (AttributeError, ValueError):
+                        self.exceptions = True
+                        self.re_parameter2 -= 1
+                        print('re_parameter2 (NOT done, instance is autoparamed): ', self.re_parameter2)
+                    # except Exception as e:
+                    #     print(e, 'readjusting, param2')
+                    #     print(self.image_path)
+                    #     self.exceptions = True
+                    #     # return 0, 0
+                    else:
+                        print('re_parameter2 (done, instance is autoparamed): ', self.re_parameter2)
+                        self.exceptions = False
+                        break
                 else:
-                    print('re_parameter2 (done, instance is autoparamed): ', self.re_parameter2)
-                    self.exceptions = False
+                    print("bad image, skipping")
                     break
                 
         else:
@@ -82,20 +87,24 @@ class CircleDetectInstance:
             # self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
             
             while self.exceptions:
-                try:
-                    self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
-                except ValueError:
-                    self.exceptions = True
-                    self.parameter2 -= 1
-                    print('re_parameter2: (NOT done, instance done normally)', self.parameter2)
-                # except Exception as e:
-                #     print(e, 'readjusting, param2, no autoparam')
-                #     print(self.image_path)
-                #     self.exceptions = True
-                #     # return 0, 0
+                if self.re_parameter2 > 10:
+                    try:
+                        self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
+                    except ValueError:
+                        self.exceptions = True
+                        self.parameter2 -= 1
+                        print('re_parameter2: (NOT done, instance done normally)', self.parameter2)
+                    # except Exception as e:
+                    #     print(e, 'readjusting, param2, no autoparam')
+                    #     print(self.image_path)
+                    #     self.exceptions = True
+                    #     # return 0, 0
+                    else:
+                        print('re_parameter2 (done, instance done normally): ', self.re_parameter2)
+                        self.exceptions = False
+                        break
                 else:
-                    print('re_parameter2 (done, instance done normally): ', self.re_parameter2)
-                    self.exceptions = False
+                    print("bad image, skipping")
                     break
 
 class CircleDetect:
@@ -922,28 +931,49 @@ class CircleDetect:
         determined_color = ''
         
         if delta_E_array.min() == delta_E_array[0]:
-            determined_color = 'red'
+            # if delta_E_array[0] > 10:
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'red'
             # print('red')
+            determined_color = 'red'
         elif delta_E_array.min() == delta_E_array[1]:
-            determined_color = 'green'
+            if delta_E_array[1] > 10:
+                determined_color = 'inconclusive'
+            else:
+                determined_color = 'green'
             # print('green')
         elif delta_E_array.min() == delta_E_array[2]:
-            determined_color = 'blue'
+            if delta_E_array[2] > 10:
+                determined_color = 'inconclusive'
+            else:
+                determined_color = 'blue'
             # print('blue')
         elif delta_E_array.min() == delta_E_array[3]:
-            determined_color = 'cyan'
+            if delta_E_array[3] > 10:
+                determined_color = 'inconclusive'
+            else:
+                determined_color = 'cyan'
             # print('cyan')
         elif delta_E_array.min() == delta_E_array[4]:
-            determined_color = 'magenta'
+            if delta_E_array[4] > 10:
+                determined_color = 'inconclusive'
+            else:
+                determined_color = 'magenta'
             # print('magenta')
         elif delta_E_array.min() == delta_E_array[5]:
-            determined_color = 'yellow'
+            if delta_E_array[5] > 10:
+                determined_color = 'inconclusive'
+            else:
+                determined_color = 'yellow'
             # print('yellow')
         elif delta_E_array.min() == delta_E_array[6]:
-            if delta_E_array[6] > 6:
+            if delta_E_array[6] > 10:
                 determined_color = 'inconclusive'
             else:
                 determined_color = 'black'
+                
+            # determined_color = 'black'
             # print('black')
         else:
             pass
