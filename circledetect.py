@@ -9,7 +9,7 @@ import PIL
 
 class CircleDetectInstance:
     
-    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None):
+    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=50, parameter1=70, parameter2=30, minimumRadius=15, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None, autoparam=False):
         self.image_path = image_path
         self.cct = cct
         self.range_type = range_type
@@ -28,20 +28,75 @@ class CircleDetectInstance:
         self.set_order_b = set_order_b
         
         self.exceptions = True
-        while self.exceptions:
-            try:
-                self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
-            except ValueError:
-                self.exceptions = True
-                self.parameter2 -= 1
-            except Exception as e:
-                print(e)
-                print(self.image_path)
-                self.exceptions = False
-                break
-            else:
-                self.exceptions = False
-                break
+        self.re_parameter2 = parameter2
+        
+        if autoparam:
+            readjust = True
+            self.re_parameter2 = 40
+            # self.re_minimumRadius = None
+            # self.re_maximumRadius = None
+            
+            while readjust:
+                try:
+                    benchmark_instance = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, parameter1=70, parameter2=self.re_parameter2, minimumRadius=self.minimumRadius, maximumRadius=self.maximumRadius, tolerance=self.tolerance, ptpthreshold=self.ptpthreshold, set_order_f=self.set_order_f, set_order_b=self.set_order_b, benchmark=True)
+
+                except AttributeError:
+                    self.re_parameter2 -= 1
+                    print('re_parameter2 (NOT done, setting radius): ', self.re_parameter2)
+                    
+                # except Exception as e:
+                #     print(e, 'readjusting, radius')
+                #     print(self.image_path)
+                #     self.exceptions = False
+                #     # return 0, 0
+                
+                else:
+                    self.minimumRadius = benchmark_instance.minmode_Radius
+                    self.maximumRadius = benchmark_instance.maxmode_Radius
+                    
+                    print('re_parameter2 (done, setting radius): ', self.re_parameter2)
+                    print('re_minimumRadius: ', self.minimumRadius)
+                    print('re_maximumRadius: ', self.maximumRadius)
+                    readjust = False
+                    break
+                
+            while self.exceptions:
+                try:
+                    self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.re_parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
+                except (AttributeError, ValueError):
+                    self.exceptions = True
+                    self.re_parameter2 -= 1
+                    print('re_parameter2 (NOT done, instance is autoparamed): ', self.re_parameter2)
+                # except Exception as e:
+                #     print(e, 'readjusting, param2')
+                #     print(self.image_path)
+                #     self.exceptions = True
+                #     # return 0, 0
+                else:
+                    print('re_parameter2 (done, instance is autoparamed): ', self.re_parameter2)
+                    self.exceptions = False
+                    break
+                
+        else:
+            # run an instance normally
+            # self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
+            
+            while self.exceptions:
+                try:
+                    self.cd = CircleDetect(self.image_path, self.cct, self.range_type, self.arrayVersion, self.thresholdVersion, self.detectFULL, self.altFilter, self.minimumDist, self.parameter1, self.parameter2, self.minimumRadius, self.maximumRadius, self.tolerance, self.ptpthreshold, self.set_order_f, self.set_order_b)
+                except ValueError:
+                    self.exceptions = True
+                    self.parameter2 -= 1
+                    print('re_parameter2: (NOT done, instance done normally)', self.parameter2)
+                # except Exception as e:
+                #     print(e, 'readjusting, param2, no autoparam')
+                #     print(self.image_path)
+                #     self.exceptions = True
+                #     # return 0, 0
+                else:
+                    print('re_parameter2 (done, instance done normally): ', self.re_parameter2)
+                    self.exceptions = False
+                    break
 
 class CircleDetect:
     COLOR_LIST = [
@@ -173,7 +228,7 @@ class CircleDetect:
         'magenta': 2,
         'yellow': 3}
       
-    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None):
+    def __init__(self, image_path, cct=0, range_type=0, arrayVersion=False, thresholdVersion=False, detectFULL=False, altFilter=True, minimumDist=20, parameter1=70, parameter2=20, minimumRadius=0, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None, benchmark=False):
         if set_order_f or set_order_f is None:
             RuntimeError('set_order_f/set_order_b must be set')
         
@@ -191,6 +246,8 @@ class CircleDetect:
         self.color_check_type = cct
         self.range_type = range_type
         self.altFilter = altFilter
+        self.minmode_Radius = None
+        self.maxmode_Radius = None
         self.htlf_dict = {}
         
         img = cv2.imread(str(self.image_path))
@@ -235,20 +292,84 @@ class CircleDetect:
         if detectFULL:
             self.circles = self.combined_circles
             
-        # debug functions
-        # self.show_raw_circles()
-        
-        if self.altFilter:
-            self.filtered_circles = CircleDetect.alt_filter_circles(self)
-            self.filtered_circles2 = self.filtered_circles
+        if benchmark:
+            mode = self.benchmark_radius()
+            minmode = mode - 5
+            maxmode = mode + 5
+            
+            print('minmode: ', minmode)
+            print('maxmode: ', maxmode)
+            
+            self.minmode_Radius = minmode
+            self.maxmode_Radius = maxmode
             
         else:
-            self.filtered_circles = CircleDetect.filter_circles(self)
-            self.filtered_circles2 = self.filtered_circles
+            # debug functions
+            # self.show_raw_circles()
             
-        print(self.filtered_circles.shape)
+            if self.altFilter:
+                self.filtered_circles = CircleDetect.alt_filter_circles(self)
+                self.filtered_circles2 = self.filtered_circles
+                
+            else:
+                self.filtered_circles = CircleDetect.filter_circles(self)
+                self.filtered_circles2 = self.filtered_circles
+                
+            print(self.filtered_circles.shape)
+            
+            self.vf, self.vb, unused_cimg = CircleDetect.process_image(self) 
         
-        self.vf, self.vb, unused_cimg = CircleDetect.process_image(self) 
+    def benchmark_radius(self):
+        circles = self.circles
+        
+        radius_list = []
+        radius_mode = []
+        radius_counter = []
+        
+        
+        for i in range(len(circles[0])):
+            x = circles[0][i][0]
+            y = circles[0][i][1]
+            r = circles[0][i][2]
+            
+            radius_list.append(r)
+            
+            # print('radius: ', r)
+            # self.get_range(x, y, r, self.cimg)
+        
+        radius_list = np.array(radius_list)
+        
+        radius_list = np.sort(radius_list)
+        
+        tracker = 0
+        
+        for i in range(len(radius_list)):
+            if i == 0:
+                radius_mode.append(radius_list[i])
+                radius_counter.append(1)
+            else:
+                if radius_list[i] == radius_list[i-1]:
+                    radius_counter[tracker] += 1
+                else:
+                    radius_mode.append(radius_list[i])
+                    radius_counter.append(1)
+                    tracker += 1
+        
+        print('radius list', radius_list)
+        
+        print('radius mode', radius_mode)
+        
+        print('radius counter', radius_counter)
+        
+        radius_mode = np.array(radius_mode)
+        radius_counter = np.array(radius_counter)
+        
+        highest_radius_counter = np.argsort(radius_counter)[::-1][:2]
+        which_radius_mode = radius_mode[highest_radius_counter]
+        
+        print('which radius mode', which_radius_mode[0], which_radius_mode[1])
+        
+        return int((which_radius_mode[0] + which_radius_mode[1])/2)
         
     def detect_circles(self, img):
         
@@ -262,7 +383,7 @@ class CircleDetect:
         if arrayVersion:
             for i, color in enumerate(CircleDetect.COLOR_LIST):
                 if color == 'red':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 177, 79, 73 #v
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 150, 68, 59 #v
                 elif color == 'green':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 84, 110, 45 #v
                 elif color == 'blue':
@@ -270,7 +391,7 @@ class CircleDetect:
                 elif color == 'cyan':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 103, 137, 174 #v
                 elif color == 'magenta':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 155, 69, 108 #v
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 151, 73, 105 #v
                 elif color == 'yellow':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 201, 181, 20 #v
                 elif color == 'black':
@@ -518,7 +639,7 @@ class CircleDetect:
                 else:
                     continue
                 
-        if l_cumulative > int(len(l)*0.5):
+        if l_cumulative > int(len(l)*0.2):
             l_check = True
             
         # hue check
@@ -550,7 +671,7 @@ class CircleDetect:
                 else:
                     continue
         
-        if s_cumulative > int(len(s)*0.5):
+        if s_cumulative > int(len(s)*0.2):
             s_check = True
             
         ratio_h = h_cumulative/len(h)
@@ -819,7 +940,10 @@ class CircleDetect:
             determined_color = 'yellow'
             # print('yellow')
         elif delta_E_array.min() == delta_E_array[6]:
-            determined_color = 'black'
+            if delta_E_array[6] > 6:
+                determined_color = 'inconclusive'
+            else:
+                determined_color = 'black'
             # print('black')
         else:
             pass
