@@ -639,7 +639,7 @@ class CircleDetect:
                 else:
                     continue
                 
-        if l_cumulative > int(len(l)*0.2):
+        if l_cumulative > int(len(l)*0.7):
             l_check = True
             
         # hue check
