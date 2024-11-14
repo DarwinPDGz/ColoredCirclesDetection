@@ -303,8 +303,8 @@ class CircleDetect:
             
         if benchmark:
             mode = self.benchmark_radius()
-            minmode = mode - 5
-            maxmode = mode + 5
+            minmode = mode - 4
+            maxmode = mode + 4
             
             print('minmode: ', minmode)
             print('maxmode: ', maxmode)
@@ -938,48 +938,48 @@ class CircleDetect:
             # print('red')
             determined_color = 'red'
         elif delta_E_array.min() == delta_E_array[1]:
-            if delta_E_array[1] > 10:
-                determined_color = 'inconclusive'
-            else:
-                determined_color = 'green'
-            # determined_color = 'green'
+            # if delta_E_array[1] > 11:
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'green'
+            determined_color = 'green'
             # print('green')
         elif delta_E_array.min() == delta_E_array[2]:
-            if delta_E_array[2] > 12:
-                determined_color = 'inconclusive'
-            else:
-                determined_color = 'blue'
-            # determined_color = 'blue'
+            # if delta_E_array[2] > 12:
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'blue'
+            determined_color = 'blue'
             # print('blue')
         elif delta_E_array.min() == delta_E_array[3]:
-            if delta_E_array[3] > 12:
-                determined_color = 'inconclusive'
-            else:
-                determined_color = 'cyan'
-            # determined_color = 'cyan'
+            # if delta_E_array[3] > 12:
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'cyan'
+            determined_color = 'cyan'
             # print('cyan')
         elif delta_E_array.min() == delta_E_array[4]:
-            if delta_E_array[4] > 10:
-                determined_color = 'inconclusive'
-            else:
-                determined_color = 'magenta'
-            # determined_color = 'magenta'
+            # if delta_E_array[4] > 11:
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'magenta'
+            determined_color = 'magenta'
             # print('magenta')
         elif delta_E_array.min() == delta_E_array[5]:
-            if delta_E_array[5] > 10:
-                determined_color = 'inconclusive'
-            else:
-                determined_color = 'yellow'
-            # determined_color = 'yellow'
+            # if delta_E_array[5] > 11:
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'yellow'
+            determined_color = 'yellow'
             # print('yellow')
         elif delta_E_array.min() == delta_E_array[6]:
-            if delta_E_array[6] > 10:
-                print('inconclusive black: ' + str(delta_E_array[6]))
-                determined_color = 'inconclusive'
-            else:
-                determined_color = 'black'
+            # if delta_E_array[6] > 11:
+            #     print('inconclusive black: ' + str(delta_E_array[6]))
+            #     determined_color = 'inconclusive'
+            # else:
+            #     determined_color = 'black'
                 
-            # determined_color = 'black'
+            determined_color = 'black'
             # print('black')
         else:
             pass
