@@ -2,7 +2,7 @@ from circledetectexperimental import CircleDetect, CircleDetectInstance
 import os
 
 class ComputeFile:
-    def __init__(self, path, issita=False, israma=False):
+    def __init__(self, path, ishanuman=False):
         self.path = []
         self.path.append(path)
 
@@ -39,10 +39,10 @@ class ComputeFile:
 
         for i in range(len(dict_of_real_paths)):
             for j in range(len(dict_of_real_paths[i])):
-                if issita:
+                if ishanuman:
                     list_of_params = {
                         'real_path': dict_of_real_paths[i][j],
-                        'minDist': 20,
+                        'minDist': 50,
                         'param1': 70,
                         'param2': 20,
                         'minRadius': 15,
@@ -52,31 +52,13 @@ class ComputeFile:
                         'detectFULL': True,
                         'cct': 2,
                         'range_type': 2,
-                        'set_order_f':CircleDetect.SET_ORDER_F_SITA,
-                        'set_order_b':CircleDetect.SET_ORDER_B_SITA,
+                        'set_order_f':CircleDetect.SET_ORDER_F_HANUMAN,
+                        'set_order_b':CircleDetect.SET_ORDER_B_HANUMAN,
                         'arrayVersion': True}
                 else:
                     list_of_params = {
                         'real_path': dict_of_real_paths[i][j],
-                        'minDist': 15,
-                        'param1': 70,
-                        'param2': 15,
-                        'minRadius': 19,
-                        'maxRadius': 29,
-                        'ptp': 80,
-                        'tolerance': 8,
-                        'detectFULL': True,
-                        'cct': 2,
-                        'range_type': 2,
-                        'set_order_f':CircleDetect.SET_ORDER_F_RAWANA_PTS,
-                        'set_order_b':CircleDetect.SET_ORDER_B_RAWANA_PTS,
-                        'arrayVersion': False}
-                    
-                if israma:
-                    list_of_params = {}
-                    list_of_params = {
-                        'real_path': dict_of_real_paths[i][j],
-                        'minDist': 30,
+                        'minDist': 40,
                         'param1': 70,
                         'param2': 20,
                         'minRadius': 15,
@@ -86,9 +68,27 @@ class ComputeFile:
                         'detectFULL': True,
                         'cct': 2,
                         'range_type': 2,
-                        'set_order_f':CircleDetect.SET_ORDER_F_RAMA,
-                        'set_order_b':CircleDetect.SET_ORDER_B_RAMA,
-                        'arrayVersion': True}
+                        'set_order_f':CircleDetect.SET_ORDER_F_RAWANA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_RAWANA,
+                        'arrayVersion': False}
+                    
+                # if israma:
+                #     list_of_params = {}
+                #     list_of_params = {
+                #         'real_path': dict_of_real_paths[i][j],
+                #         'minDist': 50,
+                #         'param1': 70,
+                #         'param2': 20,
+                #         'minRadius': 15,
+                #         'maxRadius': 30,
+                #         'ptp': 80,
+                #         'tolerance': 8,
+                #         'detectFULL': True,
+                #         'cct': 2,
+                #         'range_type': 2,
+                #         'set_order_f':CircleDetect.SET_ORDER_F_RAMA,
+                #         'set_order_b':CircleDetect.SET_ORDER_B_RAMA,
+                #         'arrayVersion': True}
                 
                 dict_list_of_params_folder[j] = list_of_params
             
