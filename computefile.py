@@ -2,7 +2,7 @@ from circledetectexperimental import CircleDetect, CircleDetectInstance
 import os
 
 class ComputeFile:
-    def __init__(self, path, issita=False, israma=False):
+    def __init__(self, path, issita=False, israma=False, issugriwa=False, issubali=False, israwanamf=False, ishanuman=False, islaksmana=False, iswibhisana=False):
         self.path = []
         self.path.append(path)
 
@@ -89,6 +89,111 @@ class ComputeFile:
                         'set_order_f':CircleDetect.SET_ORDER_F_RAMA,
                         'set_order_b':CircleDetect.SET_ORDER_B_RAMA,
                         'arrayVersion': True}
+                    
+                if issugriwa:
+                    list_of_params = {}
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_SUGRIWA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_SUGRIWA,
+                        'arrayVersion': 4}
+                    
+                if issubali:
+                    list_of_params = {}
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_BALI,
+                        'set_order_b':CircleDetect.SET_ORDER_B_BALI,
+                        'arrayVersion': 5}
+                    
+                if israwanamf:
+                    list_of_params = {}
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_RAWANA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_RAWANA,
+                        'arrayVersion': 11}
+                    
+                if ishanuman:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 50,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_HANUMAN,
+                        'set_order_b':CircleDetect.SET_ORDER_B_HANUMAN,
+                        'arrayVersion': 2}
+                    
+                if islaksmana:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_LAKSMANA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_LAKSMANA,
+                        'arrayVersion': 3}
+                    
+                if iswibhisana:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_WIBHISANA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_WIBHISANA,
+                        'arrayVersion': 6}
                 
                 dict_list_of_params_folder[j] = list_of_params
             
@@ -112,7 +217,11 @@ class ComputeFile:
                 ptpthreshold=dict_list_of_params[i][j]['ptp'], 
                 tolerance=dict_list_of_params[i][j]['tolerance'],
                 set_order_f=dict_list_of_params[i][j]['set_order_f'],
-                set_order_b=dict_list_of_params[i][j]['set_order_b'], autoparam=True)
+                set_order_b=dict_list_of_params[i][j]['set_order_b'], 
+                autoparam=True,
+                single=True,
+                isfront=True,
+                )
             
                 dict_list_of_instances[j] = my_instance
                 
@@ -148,7 +257,7 @@ class ComputeFile:
             with open(dict_list_of_savepaths[i] + 'processed_img.txt', 'w') as f:
                 for j in range(len(dict_list_of_instances_list[i])):
                     if dict_list_of_instances_list[i][j].cd != None:
-                        vf, vb, unusedcimg = dict_list_of_instances_list[i][j].cd.process_image(save=True, path=dict_list_of_saves[i][j])
+                        vf, vb = dict_list_of_instances_list[i][j].cd.process_image(save=True, path=dict_list_of_saves[i][j])
                         f.write(str(dict_list_of_saves[i][j]) + '\n' + str(vf) + '\n' + str(vb) + '\n')
                         
             f.close()
