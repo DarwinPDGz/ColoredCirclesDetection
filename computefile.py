@@ -2,7 +2,7 @@ from circledetectexperimental import CircleDetect, CircleDetectInstance
 import os
 
 class ComputeFile:
-    def __init__(self, path, issita=False, israma=False, issugriwa=False, issubali=False, israwanamf=False, ishanuman=False, islaksmana=False, iswibhisana=False):
+    def __init__(self, path, issita=False, israma=False, issugriwa=False, issubali=False, israwanamf=False, ishanuman=False, islaksmana=False, iswibhisana=False, ishanumanalt=False, issubalialt=False, ishanumanpts=False, israwanapts=False, isangada=False, isanila=False, isangada2=False, isanila2=False):
         self.path = []
         self.path.append(path)
 
@@ -194,6 +194,142 @@ class ComputeFile:
                         'set_order_f':CircleDetect.SET_ORDER_F_WIBHISANA,
                         'set_order_b':CircleDetect.SET_ORDER_B_WIBHISANA,
                         'arrayVersion': 6}
+                    
+                if ishanumanalt:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_HANUMAN,
+                        'set_order_b':CircleDetect.SET_ORDER_B_HANUMAN,
+                        'arrayVersion': 12}
+                    
+                if issubalialt:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_BALI,
+                        'set_order_b':CircleDetect.SET_ORDER_B_BALI,
+                        'arrayVersion': 13}
+                    
+                if ishanumanpts:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_HANUMAN,
+                        'set_order_b':CircleDetect.SET_ORDER_B_HANUMAN,
+                        'arrayVersion': 14}
+                    
+                if israwanapts:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_RAWANA_PTS,
+                        'set_order_b':CircleDetect.SET_ORDER_B_RAWANA_PTS,
+                        'arrayVersion': 15}
+                    
+                if isangada:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_ANGADA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_ANGADA,
+                        'arrayVersion': 17}
+                    
+                if isanila:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_ANILA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_ANILA,
+                        'arrayVersion': 18}
+
+                if isangada2:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_ANGADA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_ANGADA,
+                        'arrayVersion': 19}
+                    
+                if isanila2:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 20,
+                        'minRadius': 15,
+                        'maxRadius': 30,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_ANILA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_ANILA,
+                        'arrayVersion': 20}
                 
                 dict_list_of_params_folder[j] = list_of_params
             

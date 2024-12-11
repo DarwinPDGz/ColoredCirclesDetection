@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import math
-import os
-import PIL
+# import os
+# import PIL
 # import pandas as pd
 # import openpyxl as op
 
@@ -231,19 +231,19 @@ class CircleDetect:
         'black' : 0,
         'red': 1,
         'green': 2,
-        'blue': 3}
+        'yellow': 3}
 
     SET_ORDER_B_ANGADA = {
         'black': 0,
         'cyan': 1,
         'magenta': 2,
-        'yellow': 3}
+        'blue': 3}
     
     SET_ORDER_F_ANILA = {
         'black' : 0,
-        'red': 1,
+        'red': 3,
         'green': 2,
-        'blue': 3}
+        'blue': 1}
 
     SET_ORDER_B_ANILA = {
         'black': 0,
@@ -468,7 +468,7 @@ class CircleDetect:
         if arrayVersion == 1:
             for i, color in enumerate(CircleDetect.COLOR_LIST):
                 if color == 'red':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 197, 105, 93 #v
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 168, 75, 68 #v
                 elif color == 'green':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 86, 111, 54 #v
                 elif color == 'blue':
@@ -480,7 +480,7 @@ class CircleDetect:
                 elif color == 'yellow':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 189, 167, 29 #v
                 elif color == 'black':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 41, 41, 39 #v
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 43, 42, 40 #v
                 else:
                     continue
                     # print('color not found')
@@ -693,6 +693,198 @@ class CircleDetect:
                 else:
                     continue
                     # print('color not found')
+        elif arrayVersion == 12: #hanuman #2 (lptf, mf, pts)
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 139, 54, 47 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 105, 133, 75 #
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 51, 61, 112 #
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 137, 62, 93 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 164, 144, 16 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 52, 51, 49 #
+                else:
+                    continue
+                    # print('color not found')
+        elif arrayVersion == 13: #subali #2 (ptf)
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 199, 96, 87 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 93, 118, 61 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 71, 84, 162 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 129, 163, 201 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 195, 103, 147 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 177, 160, 28 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 74, 71, 64 #v
+                else:
+                    continue
+                    # print('color not found')
+        elif arrayVersion == 14: #hanuman #3 (pts)
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 139, 54, 47 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 82, 102, 53 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 67, 77, 148 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 137, 62, 93 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 194, 169, 27 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 49, 48, 44 #v
+                else:
+                    continue
+                    # print('color not found')    
+        elif arrayVersion == 15: #rawana pts
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 130, 56, 45 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 82, 102, 53 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 43, 53, 106 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 137, 62, 93 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 176, 152, 18 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 20, 19, 17 #v
+                else:
+                    continue
+                    # print('color not found')  
+        elif arrayVersion == 16: #rama mf
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 176, 88, 76 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 79, 102, 50 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 76, 86, 147 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 231, 123, 173 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 176, 152, 18 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 41, 40, 36 #v
+                else:
+                    continue
+                    # print('color not found')     
+        elif arrayVersion == 17: #anggada
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 185, 91, 91
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 116, 142, 79 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 76, 86, 147 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 231, 123, 173 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 222, 200, 52 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 77, 76, 71 #v
+                else:
+                    continue
+                    # print('color not found')     
+        elif arrayVersion == 18: #anila
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 189, 92, 85 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 110, 138, 79 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 62, 72, 144 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 231, 123, 173 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 222, 200, 52 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 65, 64, 62 #v
+                else:
+                    continue
+                    # print('color not found')           
+        elif arrayVersion == 19: #angada df, pts
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 167, 82, 77 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 78, 99, 56 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 62, 72, 144 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 231, 123, 173 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 222, 200, 52 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 65, 64, 62 #v
+                else:
+                    continue
+                    # print('color not found')    
+        elif arrayVersion == 20: #anila2
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 189, 92, 85 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 110, 138, 79 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 47, 56, 123 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 231, 123, 173 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 222, 200, 52 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 65, 64, 62 #v
+                else:
+                    continue
+                    # print('color not found')   
+        elif arrayVersion == 21: #anilalptf
+            for i, color in enumerate(CircleDetect.COLOR_LIST):
+                if color == 'red':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 148, 77, 71 #v
+                elif color == 'green':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 97, 123, 72 #v
+                elif color == 'blue':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 57, 69, 127 #v
+                elif color == 'cyan':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 83, 104, 131 #v
+                elif color == 'magenta':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 231, 123, 173 #v
+                elif color == 'yellow':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 222, 200, 52 #v
+                elif color == 'black':
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 65, 62, 57 #v
+                else:
+                    continue
+                    # print('color not found')        
+        
+            
         else:
             for i, color in enumerate(CircleDetect.COLOR_LIST):
                 if color == 'red':
@@ -1280,13 +1472,13 @@ class CircleDetect:
             # determined_color = 'yellow'
             # print('yellow')
         elif delta_E_array.min() == delta_E_array[6]:
-            if delta_E_array[6] > limit:
+            if delta_E_array[6] > (limit):
                 print('inconclusive black: ' + str(delta_E_array[6]))
                 determined_color = 'inconclusive'
             else:
                 determined_color = 'black'
                 
-            determined_color = 'black'
+            # determined_color = 'black'
             # print('black')
         else:
             pass
