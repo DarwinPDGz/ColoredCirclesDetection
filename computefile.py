@@ -2,7 +2,9 @@ from circledetectexperimental import CircleDetect, CircleDetectInstance
 import os
 
 class ComputeFile:
+    
     def __init__(self, path, issita=False, israma=False, issugriwa=False, issubali=False, israwanamf=False, ishanuman=False, islaksmana=False, iswibhisana=False, ishanumanalt=False, issubalialt=False, ishanumanpts=False, israwanapts=False, isangada=False, isanila=False, isangada2=False, isanila2=False):
+        """processes all the images in the path specified using the functions from circledetectexperimental.py, creates nested dictionaries for each instance per image in the file"""
         self.path = []
         self.path.append(path)
 

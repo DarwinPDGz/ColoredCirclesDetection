@@ -10,6 +10,30 @@ import math
 class CircleDetectInstance:
     
     def __init__(self, image_path, cct=0, range_type=0, arrayVersion=0, thresholdVersion=False, detectFULL=True, altFilter=True, minimumDist=50, parameter1=70, parameter2=30, minimumRadius=15, maximumRadius=30, tolerance=5, ptpthreshold=15, set_order_f=None, set_order_b=None, autoparam=False, debug=False, single=False, isfront=True):
+        """used to create an instance of the CircleDetect class
+
+        Args:
+            image_path (_type_): _description_
+            cct (int, optional): _description_. Defaults to 0.
+            range_type (int, optional): _description_. Defaults to 0.
+            arrayVersion (int, optional): _description_. Defaults to 0.
+            thresholdVersion (bool, optional): _description_. Defaults to False.
+            detectFULL (bool, optional): _description_. Defaults to True.
+            altFilter (bool, optional): _description_. Defaults to True.
+            minimumDist (int, optional): _description_. Defaults to 50.
+            parameter1 (int, optional): _description_. Defaults to 70.
+            parameter2 (int, optional): _description_. Defaults to 30.
+            minimumRadius (int, optional): _description_. Defaults to 15.
+            maximumRadius (int, optional): _description_. Defaults to 30.
+            tolerance (int, optional): _description_. Defaults to 5.
+            ptpthreshold (int, optional): _description_. Defaults to 15.
+            set_order_f (_type_, optional): _description_. Defaults to None.
+            set_order_b (_type_, optional): _description_. Defaults to None.
+            autoparam (bool, optional): _description_. Defaults to False.
+            debug (bool, optional): _description_. Defaults to False.
+            single (bool, optional): _description_. Defaults to False.
+            isfront (bool, optional): _description_. Defaults to True.
+        """
         self.image_path = image_path
         self.cct = cct
         self.range_type = range_type
@@ -392,6 +416,11 @@ class CircleDetect:
             self.vf, self.vb = CircleDetect.process_image(self) 
         
     def benchmark_radius(self):
+        """from the given circles, choose a radius value that is most ubiquitous
+
+        Returns:
+            _type_: _description_
+        """
         circles = self.circles
         
         radius_list = []
@@ -455,6 +484,14 @@ class CircleDetect:
         return int((wrm1 + wrm2)/2)
         
     def detect_circles(self, img):
+        """detects circles from given image
+
+        Args:
+            img (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         
         circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,self.minimumDist,
                             param1=self.parameter1,param2=self.parameter2,minRadius=self.minimumRadius,maxRadius=self.maximumRadius)
@@ -464,6 +501,7 @@ class CircleDetect:
     # rama True
         
     def setting_color_array(arrayVersion):
+        """color value presets depending on which wayang"""
         color_array = np.zeros(shape=(3,len(CircleDetect.COLOR_LIST)))
         if arrayVersion == 1:
             for i, color in enumerate(CircleDetect.COLOR_LIST):
@@ -910,6 +948,18 @@ class CircleDetect:
         return color_array 
     
     def get_lab_range(self, circleposx, circleposy, radius, img, tolerance=8):
+        """OLD FUNCTION, a variation of the range comaprison method, but with lab values
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            img (_type_): _description_
+            tolerance (int, optional): _description_. Defaults to 8.
+
+        Returns:
+            _type_: _description_
+        """
         
         lab_cimg = cv2.cvtColor(self.cimg, cv2.COLOR_RGB2LAB)
         
@@ -967,6 +1017,7 @@ class CircleDetect:
         return new_list[0], new_list[1], new_list[2]
     
     def lex_sorter(self, circleposx, circleposy, radius, img, sorted=True):
+        """not an actual lex_sorter, but grabs all the hls values in the circular region of interest"""
         cimg = self.cimg
         cimg = cv2.cvtColor(cimg, cv2.COLOR_RGB2HLS)
         
@@ -1024,6 +1075,29 @@ class CircleDetect:
     
     
     def grab_big_groups(self, circleposx, circleposy, radius, img):
+        """circle comparator based on the hls stability comparison.
+        works by sorting hue, light, and saturation into a dedicated list and later converting it into an np.array.
+        The hue, lightness, and saturation that appears the most is chosen as a reference and a tolerance of set values (+-value)
+        is set to the corresponding referenced hue, lightness, and saturation. 
+        The algorithm then grabs all the hue, lightness, and saturation within the tolerance limits of each metric and
+        puts them into separate arrays based on the metrics respectively, this is to group the "majority hue/lightness/saturation", an emphasis is given on hue and will be used for other functions.
+        A threshold for each metric is used to value how much of a "circle-sticker" is the detected circle, this is measured in the percentage of pixels in the detected circle.
+        The majority hue's, lightness', and saturation's array length is measured, 
+        this is the amount of pixels in the detected circle the majority hue/lightness/saturation occupies. 
+        If the circle is not from a sticker, then the colors should be an arbitrary scatter of hls values.
+        This arbitrary scatter of values would not be able to pass all three hls threshold checks perfectly.
+        As such, only stable values are accepted in the selection process, the advantage over the range method being the actual hue, lightness, and saturation of the pixels is considered in the selection process.
+
+        
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            img (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         h, l, s = CircleDetect.lex_sorter(self, circleposx, circleposy, radius, img)
         
         # one_pixel = np.zeros((1,1,3))
@@ -1192,6 +1266,14 @@ class CircleDetect:
         return h_check, l_check, s_check, hues_to_look_for, s_hue_check
     
     def view_roc(self, circleposx, circleposy, radius, img):
+        """for debugging purposes
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            img (_type_): _description_
+        """
         h, l, s = CircleDetect.lex_sorter(self, circleposx, circleposy, radius, img)
         
         h_roc = np.zeros_like(h, dtype=np.uint8)
@@ -1224,6 +1306,14 @@ class CircleDetect:
         
     
     def hls_visualizer(self, circleposx, circleposy, radius, img):
+        """for debugging purposes, visualizes hls values from given circle on an image in bar form
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            img (_type_): _description_
+        """
         h, l, s = CircleDetect.lex_sorter(self, circleposx, circleposy, radius, img)
         
         h_strip = np.zeros((20,len(h),3), dtype=np.uint8)
@@ -1267,6 +1357,20 @@ class CircleDetect:
         # plt.show()
             
     def get_range(self, circleposx, circleposy, radius, img, tolerance=8):
+        """OLD FUNCTION, used to compare circles using range method.
+        By comparing the ptp of all collected circles and grabbing the smallest, 
+        the algorithm concludes that it is the most "circle-like". 
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            img (_type_): _description_
+            tolerance (int, optional): _description_. Defaults to 8.
+
+        Returns:
+            _type_: _description_
+        """
         
         imgr = self.cimg[:,:,0]
         imgg = self.cimg[:,:,1]
@@ -1322,9 +1426,30 @@ class CircleDetect:
         return new_list[0], new_list[1], new_list[2]
     
     def dE00_comparator(self, circleposx, circleposy, radius, cimg):
+        """UNUSED
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            cimg (_type_): _description_
+        """
         pass
     
     def dE94_comparator(self, circleposx, circleposy, radius, cimg, alt=False, n=0):
+        """color comparator based on deltaE_1994
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            cimg (_type_): _description_
+            alt (bool, optional): _description_. Defaults to False.
+            n (int, optional): _description_. Defaults to 0.
+
+        Returns:
+            _type_: _description_
+        """
         color_array = self.color_array
     
         list_of_colors = np.zeros((1,7,3), dtype=np.uint8)
@@ -1489,6 +1614,17 @@ class CircleDetect:
         return determined_color, delta_E_array.min()
 
     def dE76_comparator(self, circleposx, circleposy, radius, cimg):
+        """color comparator based on deltaE_1976
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            cimg (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         color_array = self.color_array
         
         list_of_colors = np.zeros((1,7,3), dtype=np.uint8)
@@ -1572,6 +1708,7 @@ class CircleDetect:
         return determined_color, delta_E_array.min()    
     
     def rgb_comparator(self, circleposx, circleposy, radius, cimg):
+        """compares rgb values using the euclidean distance formula"""
         color_array = self.color_array
         
         grayscale = cv2.cvtColor(cimg, cv2.COLOR_BGR2GRAY)
@@ -1647,6 +1784,11 @@ class CircleDetect:
         return determined_color, delta_rgb_array.min()
     
     def alt_filter_circles(self):
+        """function to call the alternate method to filter circles (hls uniformity instead of lowest ptp)
+
+        Returns:
+            _type_: _description_
+        """
         # hue, lightness, saturation check
         circles = self.circles
         
@@ -1698,6 +1840,17 @@ class CircleDetect:
         return filtered_circles
     
     def process_htlf(self, circleposx, circleposy, radius, n):
+        """reconstructs a new hls np.array from a specified circle.
+
+        Args:
+            circleposx (_type_): _description_
+            circleposy (_type_): _description_
+            radius (_type_): _description_
+            n (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         
         h, l, s = CircleDetect.lex_sorter(self, circleposx, circleposy, radius, self.img, sorted=False)
         
@@ -1729,6 +1882,7 @@ class CircleDetect:
         
      
     def filter_circles(self):
+        """this function tries to filter all 'non' circles using either the range method"""
         # img, cimg, circles = CircleDetect.get_img_and_circles(self)
         circles = self.circles
         
@@ -1770,6 +1924,14 @@ class CircleDetect:
         return filtered_circles
         
     def detect_colors(self, type=0):
+        """tries to detect what color is the filtered_circles closest to using a specified method, and returns what color it recognizes and how 'different' it is from said color based on the selected comparator.  
+
+        Args:
+            type (int, optional): _description_. Defaults to 0.
+
+        Returns:
+            _type_: _description_
+        """
         filtered_circles = self.filtered_circles
         
         recognized_colors = []
@@ -2383,6 +2545,11 @@ class CircleDetect:
         cv2.destroyAllWindows()
 
     def show_initial_circles(self, isgray=False):
+        """Function to show the all the circles that passed the filters for circle selection
+
+        Args:
+            isgray (bool, optional): _description_. Defaults to False.
+        """
         if isgray:
             icimg = self.img.copy()
         else:
@@ -2401,6 +2568,11 @@ class CircleDetect:
         cv2.destroyAllWindows()
         
     def show_filtered_circles(self, isgray=False):
+        """Function to show the only circles the program thinks is the best candidate for each color
+
+        Args:
+            isgray (bool, optional): _description_. Defaults to False.
+        """
         
         filtered_circles, recognized_colors = CircleDetect.anti_duplicates(self)
         self.filtered_circles2 = filtered_circles
