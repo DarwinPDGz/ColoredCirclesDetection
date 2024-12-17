@@ -8,16 +8,6 @@ class ComputeFile:
         self.path = []
         self.path.append(path)
 
-        # path = []
-
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/sita_initial_wflash/threequarters/pts/')
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/sita_initial_wflash/threequarters/lptf/')
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/rahwana/ptf/')
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/rahwana/lptf/')
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/rahwana/df/')
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/rahwana/pts/') no
-        # path.append('c:/Users/Darwin/Documents/Wayang_related/imgprocessing/rahwana/mf/')
-
         print(self.path)
 
         dict_of_dirs = {}
@@ -31,7 +21,6 @@ class ComputeFile:
         for i in range(len(self.path)):
             real_path = []
             for j in range(len(dict_of_dirs[i])):
-            # for j in range(1):
                 real_path.append(self.path[i] + dict_of_dirs[i][j])
             dict_of_real_paths[i] = real_path
 
@@ -389,7 +378,6 @@ class ComputeFile:
         dict_list_of_savepaths = {}
 
         for i in range(len(self.path)):
-            # for j in range(len(dict_of_real_paths[i])):
             savepath = str(self.path[i]) + 'reprocessed/'
             if os.path.exists(savepath) == False:
                 os.mkdir(savepath)
