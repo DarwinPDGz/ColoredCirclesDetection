@@ -1823,7 +1823,7 @@ class CircleDetect:
                 delete_list.append(i)
             else:
                 print('alt_filter_circles passed:' , i)
-                ### cursed, make dynamic dictionary
+                ### make dynamic dictionary
                 self.htlf_dict[dictCounter] = np.array(htlf)
                 dictCounter += 1
                 
