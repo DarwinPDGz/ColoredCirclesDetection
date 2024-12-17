@@ -531,7 +531,7 @@ class CircleDetect:
                 elif color == 'blue':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 52, 61, 120
                 elif color == 'cyan':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 80, 131, 171
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 62, 82, 106
                 elif color == 'magenta':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 137, 62, 93
                 elif color == 'yellow':
@@ -677,15 +677,15 @@ class CircleDetect:
         elif arrayVersion == 9: #rama
             for i, color in enumerate(CircleDetect.COLOR_LIST):
                 if color == 'red':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 147, 68, 57
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 200, 108, 95
                 elif color == 'green':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 76, 96, 57
                 elif color == 'blue':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 52, 61, 120
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 76, 85, 146
                 elif color == 'cyan':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 80, 131, 171
                 elif color == 'magenta':
-                    color_array[0][i], color_array[1][i], color_array[2][i] = 137, 62, 93
+                    color_array[0][i], color_array[1][i], color_array[2][i] = 159, 82, 116
                 elif color == 'yellow':
                     color_array[0][i], color_array[1][i], color_array[2][i] = 186, 165, 22
                 elif color == 'black':
@@ -1546,10 +1546,10 @@ class CircleDetect:
             
         delta_E_array = np.array(delta_E_array)
         determined_color = ''
-        limit = 25
+        limit = 25 #adjust this for different characters
         
         if delta_E_array.min() == delta_E_array[0]:
-            if delta_E_array[0] > limit:
+            if delta_E_array[0] > (limit):
                 determined_color = 'inconclusive'
                 print('inconclusive red: ' + str(delta_E_array[0]))
             else:
@@ -1597,7 +1597,7 @@ class CircleDetect:
             # determined_color = 'yellow'
             # print('yellow')
         elif delta_E_array.min() == delta_E_array[6]:
-            if delta_E_array[6] > (limit):
+            if delta_E_array[6] > (limit-6):
                 print('inconclusive black: ' + str(delta_E_array[6]))
                 determined_color = 'inconclusive'
             else:

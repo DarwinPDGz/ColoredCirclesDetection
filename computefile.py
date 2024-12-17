@@ -3,7 +3,7 @@ import os
 
 class ComputeFile:
     
-    def __init__(self, path, issita=False, israma=False, issugriwa=False, issubali=False, israwanamf=False, ishanuman=False, islaksmana=False, iswibhisana=False, ishanumanalt=False, issubalialt=False, ishanumanpts=False, israwanapts=False, isangada=False, isanila=False, isangada2=False, isanila2=False):
+    def __init__(self, path, issita=False, israma=False, issugriwa=False, issubali=False, israwanamf=False, ishanuman=False, islaksmana=False, iswibhisana=False, ishanumanalt=False, issubalialt=False, ishanumanpts=False, israwanapts=False, isangada=False, isanila=False, isangada2=False, isanila2=False, israwanadf=False):
         """processes all the images in the path specified using the functions from circledetectexperimental.py, creates nested dictionaries for each instance per image in the file"""
         self.path = []
         self.path.append(path)
@@ -90,7 +90,7 @@ class ComputeFile:
                         'range_type': 2,
                         'set_order_f':CircleDetect.SET_ORDER_F_RAMA,
                         'set_order_b':CircleDetect.SET_ORDER_B_RAMA,
-                        'arrayVersion': True}
+                        'arrayVersion': 9}
                     
                 if issugriwa:
                     list_of_params = {}
@@ -332,6 +332,23 @@ class ComputeFile:
                         'set_order_f':CircleDetect.SET_ORDER_F_ANILA,
                         'set_order_b':CircleDetect.SET_ORDER_B_ANILA,
                         'arrayVersion': 20}
+                    
+                if israwanadf:
+                    list_of_params = {
+                        'real_path': dict_of_real_paths[i][j],
+                        'minDist': 15,
+                        'param1': 70,
+                        'param2': 15,
+                        'minRadius': 19,
+                        'maxRadius': 29,
+                        'ptp': 80,
+                        'tolerance': 8,
+                        'detectFULL': True,
+                        'cct': 2,
+                        'range_type': 2,
+                        'set_order_f':CircleDetect.SET_ORDER_F_RAWANA,
+                        'set_order_b':CircleDetect.SET_ORDER_B_RAWANA,
+                        'arrayVersion': False}
                 
                 dict_list_of_params_folder[j] = list_of_params
             
@@ -373,7 +390,7 @@ class ComputeFile:
 
         for i in range(len(self.path)):
             # for j in range(len(dict_of_real_paths[i])):
-            savepath = str(self.path[i]) + 'processed/'
+            savepath = str(self.path[i]) + 'reprocessed/'
             if os.path.exists(savepath) == False:
                 os.mkdir(savepath)
                 
